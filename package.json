@@ -1,0 +1,5 @@
+{
+  "name": "gtblock-cliente", "version": "0.1.0", "private": true, "type": "module",
+  "engines": { "node": ">=24.0.0" },
+  "scripts": { "dev": "node --env-file-if-exists=.env server/index.mjs", "start": "node --env-file-if-exists=.env server/index.mjs", "seed": "node --env-file-if-exists=.env server/seed.mjs", "invite": "node --env-file-if-exists=.env server/invite.mjs", "build": "node scripts/build-demo.mjs", "preview": "node scripts/preview-demo.mjs", "test": "node --test --test-concurrency=1 tests/*.test.mjs", "check": "node --check server/index.mjs && node --check public/app.js && node --check demo/demo-api.mjs && node --check scripts/build-demo.mjs" }
+}

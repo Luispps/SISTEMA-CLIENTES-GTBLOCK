@@ -1,0 +1,11 @@
+import {db,hash,secret,dataDir,audit} from './db.mjs';
+import {appendFileSync} from 'node:fs';
+import {resolve} from 'node:path';
+const email=process.argv[2]?.trim().toLowerCase();
+const user=db.prepare('SELECT * FROM users WHERE email=?').get(email||'');
+if(!user) throw new Error('Usuário deve estar previamente cadastrado e vinculado por operador autorizado.');
+if(process.env.NODE_ENV==='production') throw new Error('Transporte de email real ainda não configurado.');
+const token=secret();db.prepare('DELETE FROM tokens WHERE user_id=?').run(user.id);
+db.prepare('INSERT INTO tokens VALUES(?,?,?,?)').run(hash(token),user.id,'invite',Date.now()+1800000);
+appendFileSync(resolve(dataDir,'dev-mailbox.jsonl'),JSON.stringify({to:email,url:`${process.env.APP_ORIGIN||'http://127.0.0.1:4310'}/#ativar?token=${token}`,expiresIn:'30 minutos'})+'\n',{mode:0o600});
+audit('local-operator','invite.created',user.id);console.log('Convite salvo na caixa local data/dev-mailbox.jsonl. Não compartilhar esse arquivo.');
